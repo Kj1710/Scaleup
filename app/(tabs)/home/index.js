@@ -24,7 +24,7 @@ import { useRouter } from "expo-router";
 const index = () => {
   const router = useRouter();
   const [todos, setTodos] = useState([]);
-  const today = moment().format("MMM Do");
+  const today = moment().format("MMM Do YYYY");
   const [isModalVisible, setModalVisible] = useState(false);
   const [category, setCategory] = useState("All");
   const [todo, setTodo] = useState("");
@@ -130,11 +130,21 @@ const index = () => {
     }
   };
 
+  const deleteTodo = async (todoId) => {
+    try {
+      await axios.delete(`http://192.168.29.184:3000/todos/${todoId}`);
+
+      await getUserTodos();
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
   console.log("completed", completedTodos);
   console.log("pending", pendingTodos);
   return (
     <>
-      <View
+      {/* <View
         style={{
           marginHorizontal: 10,
           marginVertical: 10,
@@ -186,13 +196,26 @@ const index = () => {
         <Pressable onPress={() => setModalVisible(!isModalVisible)}>
           <AntDesign name="pluscircle" size={30} color="#007FFF" />
         </Pressable>
+      </View> */}
+      <View>
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "bold",
+            color: "orange",
+            textAlign: "center",
+            backgroundColor:"white"
+          }}
+        >
+          Stay Organized with Task Manager
+        </Text>
       </View>
 
       <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
-        <View style={{ padding: 10 }}>
+        <View style={{ padding: 15 }}>
           {todos?.length > 0 ? (
             <View>
-              {pendingTodos?.length > 0 && <Text>Tasks to Do! {today}</Text>}
+              {pendingTodos?.length > 0 && <Text>Date: {today}</Text>}
 
               {pendingTodos?.map((item, index) => (
                 <Pressable
@@ -230,7 +253,11 @@ const index = () => {
                       color="black"
                     />
                     <Text style={{ flex: 1 }}>{item?.title}</Text>
-                    <Feather name="flag" size={20} color="black" />
+                    <MaterialIcons
+                      name="label-important-outline"
+                      size={24}
+                      color="black"
+                    />
                   </View>
                 </Pressable>
               ))}
@@ -295,7 +322,14 @@ const index = () => {
                         >
                           {item?.title}
                         </Text>
-                        <Feather name="flag" size={20} color="gray" />
+                        <Pressable>
+                          <AntDesign
+                            name="delete"
+                            size={24}
+                            color="black"
+                            onPress={() => deleteTodo(item._id)} // Call deleteTodo function with todoId
+                          />
+                        </Pressable>
                       </View>
                     </Pressable>
                   ))}
@@ -357,7 +391,7 @@ const index = () => {
         <ModalContent style={{ width: "100%", height: 280 }}>
           <View
             style={{
-              marginVertical: 10,
+              marginVertical: 1,
               flexDirection: "row",
               alignItems: "center",
               gap: 10,
@@ -375,10 +409,10 @@ const index = () => {
                 flex: 1,
               }}
             />
-            <Ionicons onPress={addTodo} name="send" size={24} color="#007FFF" />
+            <Ionicons onPress={addTodo} name="send" size={24} color="orange" />
           </View>
 
-          <Text>Choose Category</Text>
+          {/* <Text>Choose Category</Text>
 
           <View
             style={{
@@ -424,9 +458,9 @@ const index = () => {
             >
               <Text>WishList</Text>
             </Pressable>
-          </View>
+          </View> */}
 
-          <Text>Some sugggestions</Text>
+          {/* <Text>Some sugggestions</Text>
           <View
             style={{
               flexDirection: "row",
@@ -450,7 +484,7 @@ const index = () => {
                 <Text style={{ textAlign: "center" }}>{item?.todo}</Text>
               </Pressable>
             ))}
-          </View>
+          </View> */}
         </ModalContent>
       </BottomModal>
     </>

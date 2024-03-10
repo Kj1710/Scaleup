@@ -78,7 +78,7 @@ app.post("/login", async (req, res) => {
 
     const token = jwt.sign({ userId: user._id }, secretKey);
 
-    res.status(200).json({ token , userId: user._id});
+    res.status(200).json({ token, userId: user._id });
   } catch (error) {
     console.log("Login failed", error);
     res.status(500).json({ message: "Login failed" });
@@ -182,5 +182,32 @@ app.get("/todos/count", async (req, res) => {
     res.status(200).json({ totalCompletedTodos, totalPendingTodos });
   } catch (error) {
     res.status(500).json({ error: "Network error" });
+  }
+});
+
+app.delete("/todos/:todoId", async (req, res) => {
+  try {
+    const todoId = req.params.todoId;
+
+    const deletedTodo = await Todo.findByIdAndDelete(todoId);
+
+    if (!deletedTodo) {
+      return res.status(404).json({ error: "Todo not found" });
+    }
+
+    const user = await User.findOneAndUpdate(
+      { todos: todoId },
+      { $pull: { todos: todoId } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({ message: "Todo deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
