@@ -26,6 +26,15 @@ const Register = () => {
       password: password,
     };
 
+    if (!email.includes("@")) {
+      Alert.alert("Invalid Email", "Please enter a valid email address");
+      return;
+    }
+    if (password.length < 6) {
+      Alert.alert("Invalid Password", "Password should be at least 6 characters long");
+      return;
+    }
+
     axios
       .post("http://192.168.29.184:3000/register", user)
       .then((response) => {
@@ -34,6 +43,7 @@ const Register = () => {
           "Registration successful",
           "You have been registered successfully"
         );
+        router.push("/login")
         setEmail("");
         setPassword("");
         setName("");
@@ -50,7 +60,7 @@ const Register = () => {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView style={styles.contentContainer}>
-        <Text style={styles.headerText}>TODO-LIST TRACKER</Text>
+        <Text style={styles.headerText}>Task Manager | ScaleUp</Text>
 
         <View style={styles.formContainer}>
           <Text style={styles.headerText}>Register to your account</Text>
@@ -94,7 +104,7 @@ const Register = () => {
           </Pressable>
 
           <Pressable
-            onPress={() => router.replace("/login")}
+            onPress={() => router.push("/login")}
             style={styles.loginText}
           >
             <Text style={styles.signupText}>Already have an account? Sign in</Text>

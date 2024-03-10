@@ -24,7 +24,7 @@ const login = () => {
       try {
         const token = await AsyncStorage.getItem("authToken");
         if (token) {
-          router.replace("/(tabs)/home");
+          router.push("/(tabs)/home");
         }
       } catch (error) {
         console.log(error);
@@ -52,7 +52,7 @@ const login = () => {
       <StatusBar backgroundColor="transparent" translucent={true} />
 
       <KeyboardAvoidingView style={styles.contentContainer}>
-        <Text style={styles.headerText}>TODO-LIST TRACKER</Text>
+        <Text style={styles.headerText}>Task Manager | ScaleUp</Text>
 
         <View style={styles.formContainer}>
           <Text style={styles.headerText}>Log in to your account</Text>

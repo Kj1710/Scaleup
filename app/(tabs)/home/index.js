@@ -18,7 +18,6 @@ import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import moment from "moment";
 import { useRouter } from "expo-router";
 
@@ -60,17 +59,14 @@ const index = () => {
   ];
   const addTodo = async () => {
     try {
-      const userId = await AsyncStorage.getItem('userId');
+      const userId = await AsyncStorage.getItem("userId");
       const todoData = {
         title: todo,
         category: category,
       };
 
       axios
-        .post(
-          `http://192.168.29.184:3000/todos/${userId}`,
-          todoData
-        )
+        .post(`http://192.168.29.184:3000/todos/${userId}`, todoData)
         .then((response) => {
           console.log(response);
         })
@@ -90,7 +86,7 @@ const index = () => {
   }, [marked, isModalVisible]);
   const getUserTodos = async () => {
     try {
-      const userId = await AsyncStorage.getItem('userId');
+      const userId = await AsyncStorage.getItem("userId");
       const response = await axios.get(
         `http://192.168.29.184:3000/users/${userId}/todos`
       );
@@ -126,14 +122,11 @@ const index = () => {
   };
   const handleLogout = async () => {
     try {
-      // Remove token from AsyncStorage
-      await AsyncStorage.removeItem('authToken');
-      console.log('Token removed from AsyncStorage');
+      await AsyncStorage.removeItem("authToken");
+      console.log("Token removed from AsyncStorage");
       router.push("/(authenticate)/login");
-      // Navigate to the login screen
-      // Replace this with your navigation logic
     } catch (error) {
-      console.log('Error logging out', error);
+      console.log("Error logging out", error);
     }
   };
 
@@ -150,9 +143,9 @@ const index = () => {
           gap: 12,
         }}
       >
-           <Pressable onPress={handleLogout} style={styles.logoutButton}>
-        <Text style={{textAlign: 'center', color: 'white'}}>Logout</Text>
-      </Pressable>
+        <Pressable onPress={handleLogout} style={styles.logoutButton}>
+          <Text style={{ textAlign: "center", color: "white" }}>Logout</Text>
+        </Pressable>
         <Pressable
           style={{
             backgroundColor: "#7CB9E8",
@@ -345,8 +338,6 @@ const index = () => {
             </View>
           )}
         </View>
-       
-   
       </ScrollView>
 
       <BottomModal
