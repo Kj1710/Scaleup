@@ -31,7 +31,10 @@ const Register = () => {
       return;
     }
     if (password.length < 6) {
-      Alert.alert("Invalid Password", "Password should be at least 6 characters long");
+      Alert.alert(
+        "Invalid Password",
+        "Password should be at least 6 characters long"
+      );
       return;
     }
 
@@ -43,7 +46,7 @@ const Register = () => {
           "Registration successful",
           "You have been registered successfully"
         );
-        router.push("/login")
+        router.push("/login");
         setEmail("");
         setPassword("");
         setName("");
@@ -107,7 +110,9 @@ const Register = () => {
             onPress={() => router.push("/login")}
             style={styles.loginText}
           >
-            <Text style={styles.signupText}>Already have an account? Sign in</Text>
+            <Text style={styles.signupText}>
+              Already have an account? Sign in
+            </Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>

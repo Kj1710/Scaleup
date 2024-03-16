@@ -20,8 +20,19 @@ import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import moment from "moment";
 import { useRouter } from "expo-router";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 const index = () => {
+  const [expoPushToken, setExpoPushToken] = useState("");
   const router = useRouter();
   const [todos, setTodos] = useState([]);
   const today = moment().format("MMM Do YYYY");
@@ -31,32 +42,7 @@ const index = () => {
   const [pendingTodos, setPendingTodos] = useState([]);
   const [completedTodos, setCompletedTodos] = useState([]);
   const [marked, setMarked] = useState(false);
-  const suggestions = [
-    {
-      id: "0",
-      todo: "Drink Water, keep healthy",
-    },
-    {
-      id: "1",
-      todo: "Go Excercising",
-    },
-    {
-      id: "2",
-      todo: "Go to bed early",
-    },
-    {
-      id: "3",
-      todo: "Take pill reminder",
-    },
-    {
-      id: "4",
-      todo: "Go Shopping",
-    },
-    {
-      id: "5",
-      todo: "finish assignments",
-    },
-  ];
+
   const addTodo = async () => {
     try {
       const userId = await AsyncStorage.getItem("userId");
@@ -64,16 +50,17 @@ const index = () => {
         title: todo,
         category: category,
       };
-
+  
       axios
         .post(`http://192.168.29.184:3000/todos/${userId}`, todoData)
         .then((response) => {
+          sendNotification("add", todo); // Sending notification after adding todo
           console.log(response);
         })
         .catch((error) => {
           console.log("error", error);
         });
-
+  
       await getUserTodos();
       setModalVisible(false);
       setTodo("");
@@ -81,9 +68,90 @@ const index = () => {
       console.log("error", error);
     }
   };
+  
+  async function registerForPushNotificationsAsync() {
+    let token;
+
+    if (Platform.OS === "android") {
+      await Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#FF231F7C",
+      });
+    }
+
+    if (Device.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        alert("Failed to get push token for push notification!");
+        return;
+      }
+      // Learn more about projectId:
+      // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
+      token = (
+        await Notifications.getExpoPushTokenAsync({
+          projectId: "f93bb557-788f-4a1b-94be-518e9d883f1a",
+        })
+      ).data;
+      console.log(token);
+    } else {
+      alert("Must use physical device for Push Notifications");
+    }
+
+    return token;
+  }
+
+  const sendNotification = async (action, title) => {
+    console.log("Sending push notification...");
+
+    let messageTitle = "";
+    let messageBody = "";
+
+    if (action === "add") {
+      messageTitle = "Added a task";
+      messageBody = `New task: ${title}`;
+    } else if (action === "delete") {
+      messageTitle = "Deleted a task";
+      messageBody = `Task deleted: ${title}`;
+    }
+
+    const message = {
+      to: expoPushToken,
+      sound: "default",
+      title: messageTitle,
+      body: messageBody,
+    };
+
+    await fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      headers: {
+        host: "exp.host",
+        accept: "application/json",
+        "accept-encoding": "gzip, deflate",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(message),
+    });
+  };
+
   useEffect(() => {
+    console.log("Registering for push notifications...");
+    registerForPushNotificationsAsync()
+      .then((token) => {
+        console.log("token: ", token);
+        setExpoPushToken(token);
+      })
+      .catch((err) => console.log(err));
     getUserTodos();
   }, [marked, isModalVisible]);
+
   const getUserTodos = async () => {
     try {
       const userId = await AsyncStorage.getItem("userId");
@@ -130,10 +198,11 @@ const index = () => {
     }
   };
 
-  const deleteTodo = async (todoId) => {
+  const deleteTodo = async (todoId, title) => { // Modified to accept title parameter
     try {
+      sendNotification("delete", title);
       await axios.delete(`http://192.168.29.184:3000/todos/${todoId}`);
-
+      // Sending notification before deleting todo
       await getUserTodos();
     } catch (error) {
       console.log("error", error);
@@ -204,7 +273,7 @@ const index = () => {
             fontWeight: "bold",
             color: "orange",
             textAlign: "center",
-            backgroundColor:"white"
+            backgroundColor: "white",
           }}
         >
           Stay Organized with Task Manager

@@ -111,14 +111,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 15,
-    marginBottom:10,
+    marginBottom: 10,
   },
   formContainer: {
     width: "100%",
     backgroundColor: "rgba(255,255,255,0.5)",
     borderRadius: 15,
     padding: 20,
-    alignItems:"center"
+    alignItems: "center",
   },
   headerText: {
     fontSize: 20,
