@@ -50,7 +50,7 @@ const index = () => {
         title: todo,
         category: category,
       };
-  
+
       axios
         .post(`http://192.168.29.184:3000/todos/${userId}`, todoData)
         .then((response) => {
@@ -60,7 +60,7 @@ const index = () => {
         .catch((error) => {
           console.log("error", error);
         });
-  
+
       await getUserTodos();
       setModalVisible(false);
       setTodo("");
@@ -68,7 +68,7 @@ const index = () => {
       console.log("error", error);
     }
   };
-  
+
   async function registerForPushNotificationsAsync() {
     let token;
 
@@ -198,7 +198,8 @@ const index = () => {
     }
   };
 
-  const deleteTodo = async (todoId, title) => { // Modified to accept title parameter
+  const deleteTodo = async (todoId, title) => {
+    // Modified to accept title parameter
     try {
       sendNotification("delete", title);
       await axios.delete(`http://192.168.29.184:3000/todos/${todoId}`);
@@ -213,60 +214,14 @@ const index = () => {
   console.log("pending", pendingTodos);
   return (
     <>
-      {/* <View
+      <View
         style={{
-          marginHorizontal: 10,
-          marginVertical: 10,
+          backgroundColor: "white",
           flexDirection: "row",
           alignItems: "center",
-          gap: 12,
+          justifyContent: "center",
         }}
       >
-        <Pressable onPress={handleLogout} style={styles.logoutButton}>
-          <Text style={{ textAlign: "center", color: "white" }}>Logout</Text>
-        </Pressable>
-        <Pressable
-          style={{
-            backgroundColor: "#7CB9E8",
-            paddingHorizontal: 10,
-            paddingVertical: 6,
-            borderRadius: 25,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text style={{ color: "white", textAlign: "center" }}>All</Text>
-        </Pressable>
-        <Pressable
-          style={{
-            backgroundColor: "#7CB9E8",
-            paddingHorizontal: 10,
-            paddingVertical: 6,
-            borderRadius: 25,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text style={{ color: "white", textAlign: "center" }}>Work</Text>
-        </Pressable>
-        <Pressable
-          style={{
-            backgroundColor: "#7CB9E8",
-            paddingHorizontal: 10,
-            paddingVertical: 6,
-            borderRadius: 25,
-            alignItems: "center",
-            justifyContent: "center",
-            marginRight: "auto",
-          }}
-        >
-          <Text style={{ color: "white", textAlign: "center" }}>Personal</Text>
-        </Pressable>
-        <Pressable onPress={() => setModalVisible(!isModalVisible)}>
-          <AntDesign name="pluscircle" size={30} color="#007FFF" />
-        </Pressable>
-      </View> */}
-      <View>
         <Text
           style={{
             fontSize: 24,
@@ -278,13 +233,33 @@ const index = () => {
         >
           Stay Organized with Task Manager
         </Text>
+        <Pressable
+          onPress={() => setModalVisible(!isModalVisible)}
+          style={{
+            marginLeft: 10,
+            marginTop: 15,
+            backgroundColor: "white",
+            borderRadius: 20,
+            padding: 10,
+          }}
+        >
+          <AntDesign name="pluscircle" size={32} color="#007FFF" />
+        </Pressable>
       </View>
+      <Text
+        style={{
+          height: 1,
+          borderColor: "#D0D0D0",
+          borderWidth: 1,
+          marginTop: 1,
+        }}
+      />
 
       <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
         <View style={{ padding: 15 }}>
           {todos?.length > 0 ? (
             <View>
-              {pendingTodos?.length > 0 && <Text>Date: {today}</Text>}
+              {pendingTodos?.length > 0 && <Text>Task To Complete</Text>}
 
               {pendingTodos?.map((item, index) => (
                 <Pressable
@@ -339,15 +314,16 @@ const index = () => {
                       alignItems: "center",
                       margin: 10,
                     }}
-                  >
-                    <Image
-                      style={{ width: 100, height: 100 }}
-                      source={{
-                        uri: "https://cdn-icons-png.flaticon.com/128/6784/6784655.png",
-                      }}
-                    />
-                  </View>
+                  ></View>
 
+                  <Text
+                    style={{
+                      height: 1,
+                      borderColor: "#D0D0D0",
+                      borderWidth: 1,
+                      marginTop: 1,
+                    }}
+                  />
                   <View
                     style={{
                       flexDirection: "row",
@@ -357,11 +333,6 @@ const index = () => {
                     }}
                   >
                     <Text>Completed Tasks</Text>
-                    <MaterialIcons
-                      name="arrow-drop-down"
-                      size={24}
-                      color="black"
-                    />
                   </View>
 
                   {completedTodos?.map((item, index) => (
@@ -396,7 +367,7 @@ const index = () => {
                             name="delete"
                             size={24}
                             color="black"
-                            onPress={() => deleteTodo(item._id)} // Call deleteTodo function with todoId
+                            onPress={() => deleteTodo(item._id)}
                           />
                         </Pressable>
                       </View>
@@ -417,9 +388,9 @@ const index = () => {
               }}
             >
               <Image
-                style={{ width: 200, height: 200, resizeMode: "contain" }}
+                style={{ width: 250, height: 250, resizeMode: "contain" }}
                 source={{
-                  uri: "https://cdn-icons-png.flaticon.com/128/2387/2387679.png",
+                  uri: "https://imgs.search.brave.com/BjUUwsVwfnhlm5zgEt5B8O7K8ZrnRv-Efb2lZQPVLSU/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9zdG9y/ZS1pbWFnZXMubWlj/cm9zb2Z0LmNvbS9p/bWFnZS9hcHBzLjE5/NTA3LjkwMDcxOTky/NjYzNjM5MDYuZDRl/YTA0ZDYtM2I0Zi00/YmVlLWJmMzktMTgy/ZjhmNDhmOGI5LmE2/MDY2MTRjLTc0NjQt/NGE3NC05OTJiLTM5/NDBmNzlhODc1Yg",
                 }}
               />
               <Text
@@ -436,7 +407,7 @@ const index = () => {
                 onPress={() => setModalVisible(!isModalVisible)}
                 style={{ marginTop: 15 }}
               >
-                <AntDesign name="pluscircle" size={30} color="#007FFF" />
+                <AntDesign name="pluscircle" size={32} color="#007FFF" />
               </Pressable>
             </View>
           )}
@@ -457,7 +428,7 @@ const index = () => {
         visible={isModalVisible}
         onTouchOutside={() => setModalVisible(!isModalVisible)}
       >
-        <ModalContent style={{ width: "100%", height: 280 }}>
+        <ModalContent style={{ width: "100%", height: 70 }}>
           <View
             style={{
               marginVertical: 1,
@@ -480,80 +451,6 @@ const index = () => {
             />
             <Ionicons onPress={addTodo} name="send" size={24} color="orange" />
           </View>
-
-          {/* <Text>Choose Category</Text>
-
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 10,
-              marginVertical: 10,
-            }}
-          >
-            <Pressable
-              onPress={() => setCategory("Work")}
-              style={{
-                borderColor: "#E0E0E0",
-                paddingHorizontal: 10,
-                paddingVertical: 4,
-                borderWidth: 1,
-                borderRadius: 25,
-              }}
-            >
-              <Text>Work</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => setCategory("Personal")}
-              style={{
-                borderColor: "#E0E0E0",
-                paddingHorizontal: 10,
-                paddingVertical: 4,
-                borderWidth: 1,
-                borderRadius: 25,
-              }}
-            >
-              <Text>Personal</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => setCategory("WishList")}
-              style={{
-                borderColor: "#E0E0E0",
-                paddingHorizontal: 10,
-                paddingVertical: 4,
-                borderWidth: 1,
-                borderRadius: 25,
-              }}
-            >
-              <Text>WishList</Text>
-            </Pressable>
-          </View> */}
-
-          {/* <Text>Some sugggestions</Text>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 10,
-              flexWrap: "wrap",
-              marginVertical: 10,
-            }}
-          >
-            {suggestions?.map((item, index) => (
-              <Pressable
-                onPress={() => setTodo(item?.todo)}
-                style={{
-                  backgroundColor: "#F0F8FF",
-                  paddingHorizontal: 10,
-                  paddingVertical: 4,
-                  borderRadius: 25,
-                }}
-                key={index}
-              >
-                <Text style={{ textAlign: "center" }}>{item?.todo}</Text>
-              </Pressable>
-            ))}
-          </View> */}
         </ModalContent>
       </BottomModal>
     </>
