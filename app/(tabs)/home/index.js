@@ -22,7 +22,11 @@ import moment from "moment";
 import { useRouter } from "expo-router";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
-import {registerForPushNotificationsAsync , sendNotification } from "../../components/PushNotification"
+import {
+  registerForPushNotificationsAsync,
+  sendNotification,
+} from "../../components/PushNotification";
+import { responsiveHeight, responsiveWidth } from "react-native-responsive-screen";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -36,7 +40,7 @@ const index = () => {
   const [expoPushToken, setExpoPushToken] = useState("");
   const router = useRouter();
   const [todos, setTodos] = useState([]);
-  const [filteredTodos, setFilteredTodos] = useState([]); // State for filtered todos
+  const [filteredTodos, setFilteredTodos] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   const [isModalVisible, setModalVisible] = useState(false);
@@ -47,10 +51,8 @@ const index = () => {
   const [marked, setMarked] = useState(false);
 
   useEffect(() => {
-    console.log("Registering for push notifications...");
     registerForPushNotificationsAsync()
       .then((token) => {
-        console.log("token: ", token);
         setExpoPushToken(token);
       })
       .catch((err) => console.log(err));
@@ -69,17 +71,16 @@ const index = () => {
         .post(`http://192.168.29.184:3000/todos/${userId}`, todoData)
         .then((response) => {
           sendNotification("add", todo, expoPushToken);
-          console.log(response);
         })
         .catch((error) => {
-          console.log("error", error);
+          console.log("axios error in adding the task", error);
         });
 
       await getUserTodos();
       setModalVisible(false);
       setTodo("");
     } catch (error) {
-      console.log("error", error);
+      console.log("error in adding the task ", error);
     }
   };
 
@@ -110,19 +111,11 @@ const index = () => {
     }
   };
 
-  const handleSearch = (query) => {
-    console.log("Search History", query);
-    setSearchQuery(query); // Update search query state
+ 
 
-    // Filter todos based on search query
-    const filtered = todos.filter((todo) =>
-      todo.title.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredTodos(filtered); // Update filtered todos state
-  };
-
-  const markTodoAsCompleted = async (todoId) => {
+  const markTodoAsCompleted = async (todoId ,todo ) => {
     try {
+      sendNotification("complete", todo, expoPushToken);
       setMarked(true);
       const response = await axios.patch(
         `http://192.168.29.184:3000/todos/${todoId}/complete`
@@ -132,19 +125,11 @@ const index = () => {
       console.log("error", error);
     }
   };
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem("authToken");
-      console.log("Token removed from AsyncStorage");
-      router.push("/(authenticate)/login");
-    } catch (error) {
-      console.log("Error logging out", error);
-    }
-  };
+  
 
-  const deleteTodo = async (todoId, title) => {
+  const deleteTodo = async (todoId, todo) => {
     try {
-      sendNotification("delete", title, expoPushToken);
+      sendNotification("delete", todo , expoPushToken);
       await axios.delete(`http://192.168.29.184:3000/todos/${todoId}`);
       await getUserTodos();
     } catch (error) {
@@ -156,50 +141,6 @@ const index = () => {
   console.log("pending", pendingTodos);
   return (
     <>
-      <View
-        style={{
-          backgroundColor: "white",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          marginBottom: 10,
-        }}
-      >
-        <TextInput
-          onPress={() => handleSearch()}
-          value={searchQuery}
-          onChangeText={(text) => handleSearch(text)}
-          placeholder="Search tasks"
-          style={{
-            padding: 10,
-            borderColor: "#E0E0E0",
-            borderWidth: 1,
-            borderRadius: 5,
-            flex: 1,
-          }}
-        />
-        <Pressable
-          onPress={() => handleSearch(searchQuery)}
-          style={{
-            marginLeft: 10,
-            marginTop: 15,
-            backgroundColor: "white",
-            borderRadius: 20,
-            padding: 10,
-          }}
-        >
-          <Feather name="search" size={24} color="#007FFF" />
-        </Pressable>
-      </View>
-      <Text
-        style={{
-          height: 1,
-          borderColor: "#D0D0D0",
-          borderWidth: 1,
-          marginTop: 1,
-        }}
-      />
-
       <View
         style={{
           backgroundColor: "white",
@@ -374,15 +315,13 @@ const index = () => {
               }}
             >
               <Image
-                style={{ width: 250, height: 250, resizeMode: "contain" }}
-                source={{
-                  uri: "https://imgs.search.brave.com/BjUUwsVwfnhlm5zgEt5B8O7K8ZrnRv-Efb2lZQPVLSU/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9zdG9y/ZS1pbWFnZXMubWlj/cm9zb2Z0LmNvbS9p/bWFnZS9hcHBzLjE5/NTA3LjkwMDcxOTky/NjYzNjM5MDYuZDRl/YTA0ZDYtM2I0Zi00/YmVlLWJmMzktMTgy/ZjhmNDhmOGI5LmE2/MDY2MTRjLTc0NjQt/NGE3NC05OTJiLTM5/NDBmNzlhODc1Yg",
-                }}
+                style={{ width: 350, height: 300, resizeMode: "contain" }}
+                source={require('../../../assets/Home.png')}
               />
               <Text
                 style={{
                   fontSize: 16,
-                  marginTop: 15,
+                  marginTop: 1,
                   fontWeight: "600",
                   textAlign: "center",
                 }}
