@@ -35,7 +35,7 @@ const index = () => {
   const [expoPushToken, setExpoPushToken] = useState("");
   const router = useRouter();
   const [todos, setTodos] = useState([]);
-  const today = moment().format("MMM Do YYYY");
+ 
   const [isModalVisible, setModalVisible] = useState(false);
   const [category, setCategory] = useState("All");
   const [todo, setTodo] = useState("");

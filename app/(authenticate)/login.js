@@ -44,7 +44,7 @@ const login = () => {
       console.log("token", token);
       AsyncStorage.setItem("authToken", token);
       AsyncStorage.setItem("userId", userId);
-      router.replace("/Home/home");
+      router.replace("/(tabs)/home");
     });
   };
   return (
