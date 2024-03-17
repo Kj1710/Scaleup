@@ -64,7 +64,7 @@ const sendEmail = async (email) => {
   const mailOptions = {
     from: "Kaushal",
     to: email,
-    subject: "Registration Succesful For Task Manager",
+    subject: "Registration Successful For Task Manager",
     text: "Welcome To Task Manager",
   };
 

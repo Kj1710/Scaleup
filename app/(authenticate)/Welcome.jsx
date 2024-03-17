@@ -152,13 +152,13 @@ const Welcome = () => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#8DDFFF',
+      backgroundColor: '#F4BB44',
     },
     itemContainer: {
       flex: 1,
       justifyContent: 'space-around',
       alignItems: 'center',
-      backgroundColor: '#8DDFFF',
+      backgroundColor: '#F4BB44',
     },
     itemTitle: {
       textAlign: 'center',

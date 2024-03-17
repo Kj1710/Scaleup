@@ -43,11 +43,11 @@ export const sendNotification = async (action, title, expoPushToken) => {
   let messageBody = "";
 
   if (action === "add") {
-    messageTitle = "Added a task";
+    messageTitle = "Added a task 💪";
     messageBody = `New task Added: ${title}`;
   } else if (action === "delete") {
-    messageTitle = "Deleted a task";
-    messageBody = "A Task is deleted";
+    messageTitle = "Deleted a task 🗑️";
+    messageBody = "A Task is deleted: ";
   } else if(action==="complete"){
     messageTitle = "Congratulation🎉";
     messageBody = "You Completed a Task !!"

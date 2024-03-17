@@ -7,6 +7,7 @@ import {
   TextInput,
   Pressable,
   StatusBar,
+  Dimensions, 
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -14,6 +15,8 @@ import { AntDesign } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
 const login = () => {
   const [email, setEmail] = useState("");
@@ -58,7 +61,7 @@ const login = () => {
           <Text style={styles.headerText}>Log in to your account</Text>
 
           <View style={styles.inputContainer}>
-            <MaterialIcons name="email" size={24} color="gray" />
+            <MaterialIcons name="email" size={width * 0.06} color="gray" />
             <TextInput
               value={email}
               onChangeText={(text) => setEmail(text)}
@@ -69,7 +72,7 @@ const login = () => {
           </View>
 
           <View style={styles.inputContainer}>
-            <AntDesign name="lock1" size={24} color="gray" />
+            <AntDesign name="lock1" size={width * 0.06} color="gray" />
             <TextInput
               value={password}
               secureTextEntry={true}
@@ -110,55 +113,56 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 15,
-    marginBottom: 10,
+    paddingHorizontal: width * 0.05, 
+    marginBottom: height * 0.02, 
   },
   formContainer: {
     width: "100%",
     backgroundColor: "rgba(255,255,255,0.5)",
-    borderRadius: 15,
-    padding: 20,
+    borderRadius: width * 0.04, 
+    padding: width * 0.06, 
     alignItems: "center",
   },
   headerText: {
-    fontSize: 20,
+    fontSize: width * 0.06, 
     fontWeight: "600",
     color: "black",
-    marginBottom: 10,
+    marginBottom: height * 0.02, 
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "rgba(255,255,255,0.8)",
-    borderRadius: 15,
-    marginTop: 15,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
+    borderRadius: width * 0.04,
+    marginTop: height * 0.02,
+    paddingHorizontal: width * 0.04, 
+    paddingVertical: height * 0.015,
   },
   input: {
     flex: 1,
     color: "gray",
-    marginLeft: 10,
-    fontSize: 17,
+    marginLeft: width * 0.03,
+    fontSize: width * 0.04,
   },
   loginButton: {
     width: "100%",
     backgroundColor: "orange",
-    padding: 15,
-    borderRadius: 6,
-    marginTop: 30,
+    padding: width * 0.05,
+    borderRadius: width * 0.02,
+    marginTop: height * 0.03,
     alignItems: "center",
   },
   buttonText: {
     color: "white",
     fontWeight: "bold",
-    fontSize: 17,
+    fontSize: width * 0.04,
   },
   signupText: {
+    textDecorationLine: "underline",
     textAlign: "center",
-    fontSize: 15,
+    fontSize: width * 0.035,
     color: "gray",
-    marginTop: 7,
+    marginTop: height * 0.02,
   },
 });
 
