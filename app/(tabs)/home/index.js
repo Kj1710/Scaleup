@@ -22,6 +22,7 @@ import moment from "moment";
 import { useRouter } from "expo-router";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
+import {registerForPushNotificationsAsync , sendNotification } from "../../components/PushNotification"
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -35,13 +36,26 @@ const index = () => {
   const [expoPushToken, setExpoPushToken] = useState("");
   const router = useRouter();
   const [todos, setTodos] = useState([]);
- 
+  const [filteredTodos, setFilteredTodos] = useState([]); // State for filtered todos
+  const [searchQuery, setSearchQuery] = useState("");
+
   const [isModalVisible, setModalVisible] = useState(false);
   const [category, setCategory] = useState("All");
   const [todo, setTodo] = useState("");
   const [pendingTodos, setPendingTodos] = useState([]);
   const [completedTodos, setCompletedTodos] = useState([]);
   const [marked, setMarked] = useState(false);
+
+  useEffect(() => {
+    console.log("Registering for push notifications...");
+    registerForPushNotificationsAsync()
+      .then((token) => {
+        console.log("token: ", token);
+        setExpoPushToken(token);
+      })
+      .catch((err) => console.log(err));
+    getUserTodos();
+  }, [marked, isModalVisible]);
 
   const addTodo = async () => {
     try {
@@ -54,7 +68,7 @@ const index = () => {
       axios
         .post(`http://192.168.29.184:3000/todos/${userId}`, todoData)
         .then((response) => {
-          sendNotification("add", todo); // Sending notification after adding todo
+          sendNotification("add", todo, expoPushToken);
           console.log(response);
         })
         .catch((error) => {
@@ -69,89 +83,6 @@ const index = () => {
     }
   };
 
-  async function registerForPushNotificationsAsync() {
-    let token;
-
-    if (Platform.OS === "android") {
-      await Notifications.setNotificationChannelAsync("default", {
-        name: "default",
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#FF231F7C",
-      });
-    }
-
-    if (Device.isDevice) {
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== "granted") {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-      if (finalStatus !== "granted") {
-        alert("Failed to get push token for push notification!");
-        return;
-      }
-      // Learn more about projectId:
-      // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
-      token = (
-        await Notifications.getExpoPushTokenAsync({
-          projectId: "f93bb557-788f-4a1b-94be-518e9d883f1a",
-        })
-      ).data;
-      console.log(token);
-    } else {
-      alert("Must use physical device for Push Notifications");
-    }
-
-    return token;
-  }
-
-  const sendNotification = async (action, title) => {
-    console.log("Sending push notification...");
-
-    let messageTitle = "";
-    let messageBody = "";
-
-    if (action === "add") {
-      messageTitle = "Added a task";
-      messageBody = `New task: ${title}`;
-    } else if (action === "delete") {
-      messageTitle = "Deleted a task";
-      messageBody = `Task deleted: ${title}`;
-    }
-
-    const message = {
-      to: expoPushToken,
-      sound: "default",
-      title: messageTitle,
-      body: messageBody,
-    };
-
-    await fetch("https://exp.host/--/api/v2/push/send", {
-      method: "POST",
-      headers: {
-        host: "exp.host",
-        accept: "application/json",
-        "accept-encoding": "gzip, deflate",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(message),
-    });
-  };
-
-  useEffect(() => {
-    console.log("Registering for push notifications...");
-    registerForPushNotificationsAsync()
-      .then((token) => {
-        console.log("token: ", token);
-        setExpoPushToken(token);
-      })
-      .catch((err) => console.log(err));
-    getUserTodos();
-  }, [marked, isModalVisible]);
-
   const getUserTodos = async () => {
     try {
       const userId = await AsyncStorage.getItem("userId");
@@ -161,6 +92,7 @@ const index = () => {
 
       console.log(response.data.todos);
       setTodos(response.data.todos);
+      setFilteredTodos(response.data.todos);
 
       const fetchedTodos = response.data.todos || [];
       const pending = fetchedTodos.filter(
@@ -177,6 +109,18 @@ const index = () => {
       console.log("error", error);
     }
   };
+
+  const handleSearch = (query) => {
+    console.log("Search History", query);
+    setSearchQuery(query); // Update search query state
+
+    // Filter todos based on search query
+    const filtered = todos.filter((todo) =>
+      todo.title.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredTodos(filtered); // Update filtered todos state
+  };
+
   const markTodoAsCompleted = async (todoId) => {
     try {
       setMarked(true);
@@ -199,11 +143,9 @@ const index = () => {
   };
 
   const deleteTodo = async (todoId, title) => {
-    // Modified to accept title parameter
     try {
-      sendNotification("delete", title);
+      sendNotification("delete", title, expoPushToken);
       await axios.delete(`http://192.168.29.184:3000/todos/${todoId}`);
-      // Sending notification before deleting todo
       await getUserTodos();
     } catch (error) {
       console.log("error", error);
@@ -214,6 +156,50 @@ const index = () => {
   console.log("pending", pendingTodos);
   return (
     <>
+      <View
+        style={{
+          backgroundColor: "white",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: 10,
+        }}
+      >
+        <TextInput
+          onPress={() => handleSearch()}
+          value={searchQuery}
+          onChangeText={(text) => handleSearch(text)}
+          placeholder="Search tasks"
+          style={{
+            padding: 10,
+            borderColor: "#E0E0E0",
+            borderWidth: 1,
+            borderRadius: 5,
+            flex: 1,
+          }}
+        />
+        <Pressable
+          onPress={() => handleSearch(searchQuery)}
+          style={{
+            marginLeft: 10,
+            marginTop: 15,
+            backgroundColor: "white",
+            borderRadius: 20,
+            padding: 10,
+          }}
+        >
+          <Feather name="search" size={24} color="#007FFF" />
+        </Pressable>
+      </View>
+      <Text
+        style={{
+          height: 1,
+          borderColor: "#D0D0D0",
+          borderWidth: 1,
+          marginTop: 1,
+        }}
+      />
+
       <View
         style={{
           backgroundColor: "white",
@@ -460,3 +446,5 @@ const index = () => {
 export default index;
 
 const styles = StyleSheet.create({});
+
+// change code for searcxh button
