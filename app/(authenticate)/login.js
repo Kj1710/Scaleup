@@ -7,7 +7,7 @@ import {
   TextInput,
   Pressable,
   StatusBar,
-  Dimensions, 
+  Dimensions,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -41,7 +41,7 @@ const login = () => {
       password: password,
     };
 
-    axios.post("http://192.168.29.184:3000/login", user).then((response) => {
+    axios.post("http://Your_Ip_Address:3000/login", user).then((response) => {
       const token = response.data.token;
       const userId = response.data.userId;
       console.log("token", token);
@@ -113,21 +113,21 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: width * 0.05, 
-    marginBottom: height * 0.02, 
+    paddingHorizontal: width * 0.05,
+    marginBottom: height * 0.02,
   },
   formContainer: {
     width: "100%",
     backgroundColor: "rgba(255,255,255,0.5)",
-    borderRadius: width * 0.04, 
-    padding: width * 0.06, 
+    borderRadius: width * 0.04,
+    padding: width * 0.06,
     alignItems: "center",
   },
   headerText: {
-    fontSize: width * 0.06, 
+    fontSize: width * 0.06,
     fontWeight: "600",
     color: "black",
-    marginBottom: height * 0.02, 
+    marginBottom: height * 0.02,
   },
   inputContainer: {
     flexDirection: "row",
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.8)",
     borderRadius: width * 0.04,
     marginTop: height * 0.02,
-    paddingHorizontal: width * 0.04, 
+    paddingHorizontal: width * 0.04,
     paddingVertical: height * 0.015,
   },
   input: {

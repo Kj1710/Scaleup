@@ -65,7 +65,7 @@ const Index = () => {
       };
 
       axios
-        .post(`http://192.168.29.184:3000/todos/${userId}`, todoData)
+        .post(`http://Your_Ip_Address:3000/todos/${userId}`, todoData)
         .then((response) => {
           sendNotification("add", todo, expoPushToken);
         })
@@ -85,7 +85,7 @@ const Index = () => {
     try {
       const userId = await AsyncStorage.getItem("userId");
       const response = await axios.get(
-        `http://192.168.29.184:3000/users/${userId}/todos`
+        `http://Your_Ip_Address:3000/users/${userId}/todos`
       );
 
       console.log(response.data.todos);
@@ -113,7 +113,7 @@ const Index = () => {
       sendNotification("complete", todo, expoPushToken);
       setMarked(true);
       const response = await axios.patch(
-        `http://192.168.29.184:3000/todos/${todoId}/complete`
+        `http://Your_Ip_Address:3000/todos/${todoId}/complete`
       );
       console.log(response.data);
     } catch (error) {
@@ -124,7 +124,7 @@ const Index = () => {
   const deleteTodo = async (todoId, todo) => {
     try {
       sendNotification("delete", todo, expoPushToken);
-      await axios.delete(`http://192.168.29.184:3000/todos/${todoId}`);
+      await axios.delete(`http://Your_Ip_Address:3000/todos/${todoId}`);
       await getUserTodos();
     } catch (error) {
       console.log("error", error);

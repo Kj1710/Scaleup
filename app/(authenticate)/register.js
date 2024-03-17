@@ -42,7 +42,7 @@ const Register = () => {
     }
 
     axios
-      .post("http://192.168.29.184:3000/register", user)
+      .post("http://Your_Ip_Address:3000/register", user)
       .then((response) => {
         console.log(response);
         Alert.alert(
@@ -72,11 +72,7 @@ const Register = () => {
           <Text style={styles.headerText}>Register to your account</Text>
 
           <View style={styles.inputContainer}>
-            <MaterialIcons
-              name="person"
-              size={width * 0.06}
-              color="gray"
-            />
+            <MaterialIcons name="person" size={width * 0.06} color="gray" />
             <TextInput
               value={name}
               onChangeText={(text) => setName(text)}
