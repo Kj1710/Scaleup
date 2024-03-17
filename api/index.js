@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
 const app = express();
 const port = 3000;
@@ -12,7 +13,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const jwt = require("jsonwebtoken");
-const moment = require("moment");
 
 mongoose
   .connect("mongodb+srv://kjha7865:1234@cluster0.5zbn8te.mongodb.net/")
@@ -34,7 +34,6 @@ app.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    ///check if email is already registered
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       console.log("Email already registered");
@@ -47,6 +46,7 @@ app.post("/register", async (req, res) => {
     });
 
     await newUser.save();
+    sendEmail(newUser.email);
 
     res.status(202).json({ message: "User registered successfully" });
   } catch (error) {
@@ -54,6 +54,30 @@ app.post("/register", async (req, res) => {
     res.status(500).json({ message: "Registration failed" });
   }
 });
+
+const sendEmail = async (email) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "Kjha7865@gmail.com",
+      pass: "gokb zppi idik iuvx",
+    },
+  });
+
+  const mailOptions = {
+    from: "Kaushal",
+    to: email,
+    subject: "Registration Succesful For Task Manager",
+    text: "Welcome To Task Manager",
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Email Send Successfully");
+  } catch (error) {
+    console.error("Error in sending email:", error);
+  }
+};
 
 const generateSecretKey = () => {
   const secretKey = crypto.randomBytes(32).toString("hex");
